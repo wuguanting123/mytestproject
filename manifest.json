@@ -1,0 +1,17 @@
+{
+  "name": "健身組間休息計時器",
+  "short_name": "Rest Timer",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#090a0f",
+  "theme_color": "#090a0f",
+  "description": "極簡深色風格健身組間休息計時器與今日訓練清單",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

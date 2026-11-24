@@ -1,0 +1,711 @@
+:root {
+  --bg-primary: #090a0f;
+  --bg-surface: #12141c;
+  --bg-surface-elevated: #1a1e2a;
+  --border-subtle: #242938;
+  --border-active: #3b4359;
+  
+  --accent-color: #10b981; /* High-energy athletic emerald */
+  --accent-glow: rgba(16, 185, 129, 0.25);
+  --accent-hover: #059669;
+
+  --accent-warning: #f59e0b;
+  --accent-danger: #ef4444;
+  --accent-danger-glow: rgba(239, 68, 68, 0.4);
+
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+
+  --ring-size: 290px;
+  --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-smooth: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.app-container {
+  width: 100%;
+  max-width: 440px;
+  min-height: 100vh;
+  padding: 24px 20px calc(36px + env(safe-area-inset-bottom, 24px)) 20px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+/* Header */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 8px;
+}
+
+.app-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  color: var(--text-secondary);
+}
+
+.app-title .icon {
+  font-size: 1rem;
+}
+
+.header-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.icon-btn {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.icon-btn:hover {
+  background: var(--bg-surface-elevated);
+  color: var(--text-primary);
+  border-color: var(--border-active);
+}
+
+.icon-btn.active {
+  color: var(--accent-color);
+  border-color: var(--accent-color);
+  background: rgba(16, 185, 129, 0.1);
+}
+
+.icon-svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* Main Timer Display */
+.timer-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  margin: 16px 0 20px 0;
+}
+
+.progress-ring-container {
+  position: relative;
+  width: var(--ring-size);
+  height: var(--ring-size);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.progress-ring {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.ring-bg {
+  fill: transparent;
+  stroke: var(--bg-surface-elevated);
+  stroke-width: 10;
+}
+
+.ring-indicator {
+  fill: transparent;
+  stroke: var(--accent-color);
+  stroke-width: 10;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.25s linear, stroke var(--transition-fast);
+  filter: drop-shadow(0 0 12px var(--accent-glow));
+}
+
+.timer-section.warning .ring-indicator {
+  stroke: var(--accent-warning);
+  filter: drop-shadow(0 0 16px rgba(245, 158, 11, 0.35));
+}
+
+.timer-section.finished .ring-indicator {
+  stroke: var(--accent-danger);
+  filter: drop-shadow(0 0 20px var(--accent-danger-glow));
+  animation: pulse-danger 0.8s infinite alternate;
+}
+
+@keyframes pulse-danger {
+  0% {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+  100% {
+    transform: scale(1.02);
+    opacity: 1;
+    filter: drop-shadow(0 0 28px rgba(239, 68, 68, 0.8));
+  }
+}
+
+.timer-display {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.status-label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  margin-bottom: 4px;
+  transition: color var(--transition-fast);
+}
+
+.time-text {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 4.4rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  line-height: 1;
+  letter-spacing: -0.04em;
+  font-variant-numeric: tabular-nums;
+  margin-bottom: 8px;
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+  transition: color var(--transition-fast);
+}
+
+.timer-section.finished .time-text {
+  color: var(--accent-danger);
+  animation: flash-text 0.6s infinite alternate;
+}
+
+@keyframes flash-text {
+  from { opacity: 0.8; }
+  to { opacity: 1; }
+}
+
+.set-counter {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  font-weight: 600;
+  background: var(--bg-surface);
+  padding: 4px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--border-subtle);
+}
+
+.set-counter span {
+  color: var(--accent-color);
+  font-weight: 700;
+}
+
+/* 微調按鈕 (+/- 15s) */
+.adjust-group {
+  display: flex;
+  gap: 14px;
+  margin-top: 16px;
+}
+
+.adjust-btn {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 6px 14px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.adjust-btn:hover {
+  background: var(--bg-surface-elevated);
+  color: var(--text-primary);
+  border-color: var(--border-active);
+}
+
+.adjust-btn:active {
+  transform: scale(0.95);
+}
+
+/* 快速設定按鈕區 (30s, 60s, 90s) */
+.preset-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.section-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  text-align: center;
+}
+
+.preset-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.preset-btn {
+  background: var(--bg-surface);
+  border: 1.5px solid var(--border-subtle);
+  border-radius: 16px;
+  padding: 14px 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all var(--transition-smooth);
+}
+
+.preset-number {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  line-height: 1;
+}
+
+.preset-unit {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+.preset-btn:hover {
+  background: var(--bg-surface-elevated);
+  border-color: var(--border-active);
+  transform: translateY(-2px);
+}
+
+.preset-btn.active {
+  background: rgba(16, 185, 129, 0.08);
+  border-color: var(--accent-color);
+  box-shadow: 0 0 16px var(--accent-glow);
+}
+
+.preset-btn.active .preset-number {
+  color: var(--accent-color);
+}
+
+.preset-btn.active .preset-unit {
+  color: var(--accent-color);
+}
+
+/* 底部主控制按鈕區 */
+.controls-section {
+  display: grid;
+  grid-template-columns: 1fr 1.6fr 1fr;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 28px;
+}
+
+.control-btn {
+  border: none;
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  height: 60px;
+}
+
+.control-btn.secondary {
+  background: var(--bg-surface);
+  color: var(--text-secondary);
+  border: 1.5px solid var(--border-subtle);
+  font-size: 0.9rem;
+}
+
+.control-btn.secondary:hover {
+  background: var(--bg-surface-elevated);
+  color: var(--text-primary);
+  border-color: var(--border-active);
+}
+
+.control-btn.secondary:active {
+  transform: scale(0.96);
+}
+
+.control-btn.primary {
+  background: var(--accent-color);
+  color: #041f14;
+  font-size: 1.15rem;
+  letter-spacing: 0.02em;
+  box-shadow: 0 4px 20px var(--accent-glow);
+}
+
+.control-btn.primary:hover {
+  background: #22c55e;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(34, 197, 94, 0.4);
+}
+
+.control-btn.primary:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.control-btn.primary.running {
+  background: #f59e0b;
+  color: #271700;
+  box-shadow: 0 4px 20px rgba(245, 158, 11, 0.3);
+}
+
+.control-btn.primary.running:hover {
+  background: #fbbf24;
+}
+
+.btn-icon {
+  width: 20px;
+  height: 20px;
+}
+
+/* =========================================
+   今日訓練清單 (Today's Workout Section)
+   ========================================= */
+.workout-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.workout-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.workout-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.workout-title .icon {
+  font-size: 1.05rem;
+}
+
+.progress-badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  font-weight: 700;
+  background: var(--bg-surface-elevated);
+  color: var(--accent-color);
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--border-subtle);
+}
+
+.text-action-btn {
+  background: transparent;
+  border: none;
+  font-family: inherit;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: color var(--transition-fast);
+}
+
+.text-action-btn:hover {
+  color: var(--accent-danger);
+}
+
+/* 新增動作表單 */
+.workout-form {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 16px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.form-inputs {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.input-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.workout-input {
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-family: inherit;
+  font-size: 0.85rem;
+  color: var(--text-primary);
+  outline: none;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+  user-select: text;
+}
+
+.workout-input:focus {
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 2px var(--accent-glow);
+}
+
+.workout-input::placeholder {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
+
+.add-exercise-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-active);
+  color: var(--accent-color);
+  border-radius: 10px;
+  padding: 11px;
+  font-family: inherit;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.add-exercise-btn:hover {
+  background: rgba(16, 185, 129, 0.12);
+  border-color: var(--accent-color);
+}
+
+.add-exercise-btn:active {
+  transform: scale(0.98);
+}
+
+.add-exercise-btn .btn-icon {
+  width: 16px;
+  height: 16px;
+}
+
+/* 訓練項目清單 */
+.workout-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+}
+
+.workout-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 14px;
+  padding: 12px 14px;
+  transition: all var(--transition-fast);
+}
+
+.workout-item:hover {
+  border-color: var(--border-active);
+  background: var(--bg-surface-elevated);
+}
+
+.workout-item.completed {
+  opacity: 0.55;
+  background: rgba(18, 20, 28, 0.5);
+  border-color: transparent;
+}
+
+.item-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  min-width: 0;
+  cursor: pointer;
+}
+
+.checkbox-btn {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid var(--border-active);
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  flex-shrink: 0;
+  color: transparent;
+}
+
+.checkbox-btn .check-icon {
+  width: 14px;
+  height: 14px;
+  stroke: #041f14;
+}
+
+.workout-item.completed .checkbox-btn {
+  background: var(--accent-color);
+  border-color: var(--accent-color);
+  color: #041f14;
+}
+
+.item-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.item-name {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: color var(--transition-fast);
+}
+
+.workout-item.completed .item-name {
+  text-decoration: line-through;
+  color: var(--text-muted);
+}
+
+.item-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  font-size: 0.72rem;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.item-tag {
+  background: var(--bg-surface-elevated);
+  color: var(--text-secondary);
+  padding: 2px 8px;
+  border-radius: 6px;
+  border: 1px solid var(--border-subtle);
+}
+
+.workout-item.completed .item-tag {
+  background: transparent;
+  color: var(--text-muted);
+  border-color: transparent;
+}
+
+.item-delete-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.item-delete-btn:hover {
+  color: var(--accent-danger);
+  background: rgba(239, 68, 68, 0.12);
+}
+
+.item-delete-btn .btn-icon {
+  width: 16px;
+  height: 16px;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 24px 16px;
+  color: var(--text-muted);
+  font-size: 0.82rem;
+  border: 1px dashed var(--border-subtle);
+  border-radius: 14px;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* 響應式微調 */
+@media (max-height: 680px) {
+  :root {
+    --ring-size: 240px;
+  }
+  .time-text {
+    font-size: 3.5rem;
+  }
+  .control-btn {
+    height: 52px;
+  }
+  .preset-btn {
+    padding: 10px 8px;
+  }
+}
